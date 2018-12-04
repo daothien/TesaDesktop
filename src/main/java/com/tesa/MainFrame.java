@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -58,6 +59,7 @@ public class MainFrame extends javax.swing.JFrame {
         textToken = new javax.swing.JTextField();
         btnCreateCode = new javax.swing.JButton();
         textReport = new javax.swing.JLabel();
+        btnGetData = new javax.swing.JButton();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -96,34 +98,39 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        btnGetData.setText("Get data");
+        btnGetData.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnGetDataMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(textCode, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel3)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(textToken)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(165, 165, 165)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(textCode, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel3)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(textToken)))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(278, 278, 278))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCreateCode)
-                        .addGap(117, 117, 117)
-                        .addComponent(btnSendData)
-                        .addGap(101, 101, 101)
-                        .addComponent(btnSubmitText)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnCreateCode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnSendData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnSubmitText))
+                    .addComponent(btnGetData, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22))
             .addGroup(layout.createSequentialGroup()
                 .addGap(76, 76, 76)
                 .addComponent(textReport, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -133,23 +140,26 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(46, 46, 46)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnCreateCode)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnSendData)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnGetData)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(textCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(textToken, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(textToken, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSubmitText))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(textReport, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSubmitText)
-                    .addComponent(btnSendData)
-                    .addComponent(btnCreateCode))
-                .addGap(79, 79, 79))
+                .addGap(120, 120, 120))
         );
 
         pack();
@@ -163,7 +173,12 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         String urlPost="http://tesa.me:8181/data?u=140896&o="+token+"&t=0";
         postData(urlPost, textData.getText());
+        textReport.setForeground(Color.BLUE);
         textReport.setText("Send data successful!");
+        if (textCode.getText().trim().length()==0||null==textCode.getText()) {
+            textReport.setForeground(Color.RED);
+            textReport.setText("Send data error!");
+        }
        
     }//GEN-LAST:event_btnSendDataMouseClicked
 
@@ -177,6 +192,12 @@ public class MainFrame extends javax.swing.JFrame {
         textData.setText("");
         textReport.setText("");
     }//GEN-LAST:event_btnCreateCodeMouseClicked
+
+    private void btnGetDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGetDataMouseClicked
+        // TODO add your handling code here:
+        String token=textToken.getText();
+        textData.setText(recevieData(token));
+    }//GEN-LAST:event_btnGetDataMouseClicked
 
     /**
      * @param args the command line arguments
@@ -226,7 +247,21 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //</editor-fold>
     }
- public static HashMap<String,String> mapData(){
+      public static String recevieData(String token){
+        String data="";
+        try {
+            HttpURLConnection connection = initHttpURLConnection("http://tesa.me:8181/data?u=1&o=" + token, "GET", "text/html;charset=utf-8");
+            InputStream in = new BufferedInputStream(connection.getInputStream());
+            data = IOUtils.toString(in, "UTF-8");
+            Map<String,String> map = new ObjectMapper().readValue(data, HashMap.class);
+            data=map.get("text");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return data;
+     }
+    public static HashMap<String,String> mapData(){
         HashMap<String,String> map=null;
         try {
             HttpURLConnection connection= initHttpURLConnection("http://tesa.me:8181/getcode?u=140896","GET","text/html;charset=utf-8");
@@ -240,7 +275,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         return  map;
     }
-  public static void postData(String urlService, String data) {
+  public void postData(String urlService, String data) {
         try {
             HttpURLConnection conn= initHttpURLConnection(urlService,"POST","\"application/json; charset=UTF-8\"");
             OutputStream os = conn.getOutputStream();
@@ -252,7 +287,8 @@ public class MainFrame extends javax.swing.JFrame {
             conn.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(0);
+            textReport.setForeground(Color.RED);
+            textReport.setText("Send data error!");
         }
     }
 
@@ -275,6 +311,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateCode;
+    private javax.swing.JButton btnGetData;
     private javax.swing.JButton btnSendData;
     private javax.swing.JButton btnSubmitText;
     private javax.swing.JLabel jLabel1;

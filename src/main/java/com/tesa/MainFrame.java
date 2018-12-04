@@ -14,12 +14,28 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileSystemView;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 /**
  *
  * @author pc0203
@@ -30,6 +46,7 @@ public class MainFrame extends javax.swing.JFrame {
     public String token;
     public String urlPostData;
     public String urlDownload;
+    public String fileName;
     /**
      * Creates new form MainFrame
      */
@@ -50,7 +67,6 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         btnSendData = new javax.swing.JButton();
-        btnSubmitText = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         textData = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
@@ -60,6 +76,11 @@ public class MainFrame extends javax.swing.JFrame {
         btnCreateCode = new javax.swing.JButton();
         textReport = new javax.swing.JLabel();
         btnGetData = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
+        fileChooser = new javax.swing.JButton();
+        textFilePath = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        btnDownloadFile = new javax.swing.JButton();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -68,6 +89,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2.setText("jLabel2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 255, 255));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnSendData.setText("Send data");
         btnSendData.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -80,16 +103,25 @@ public class MainFrame extends javax.swing.JFrame {
                 btnSendDataActionPerformed(evt);
             }
         });
-
-        btnSubmitText.setText("Submit Text");
+        getContentPane().add(btnSendData, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 30, 100, 40));
 
         textData.setColumns(20);
         textData.setRows(5);
+        textData.setBorder(javax.swing.BorderFactory.createTitledBorder("Text"));
         jScrollPane2.setViewportView(textData);
+        textData.getAccessibleContext().setAccessibleName("");
+
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 340, -1));
 
         jLabel1.setText("Code: ");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, 20));
+        getContentPane().add(textCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 40, -1));
 
         jLabel3.setText("Token:");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 40, 20));
+
+        textToken.setEnabled(false);
+        getContentPane().add(textToken, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 170, 200, 20));
 
         btnCreateCode.setText("Create code");
         btnCreateCode.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -97,6 +129,16 @@ public class MainFrame extends javax.swing.JFrame {
                 btnCreateCodeMouseClicked(evt);
             }
         });
+        btnCreateCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateCodeActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnCreateCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 30, 100, 40));
+
+        textReport.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        textReport.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        getContentPane().add(textReport, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, 200, 40));
 
         btnGetData.setText("Get data");
         btnGetData.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -104,72 +146,46 @@ public class MainFrame extends javax.swing.JFrame {
                 btnGetDataMouseClicked(evt);
             }
         });
+        btnGetData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGetDataActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnGetData, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 80, 100, 40));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(textCode, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(textToken)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(165, 165, 165)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnCreateCode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnSendData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(btnSubmitText))
-                    .addComponent(btnGetData, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(76, 76, 76)
-                .addComponent(textReport, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCreateCode)
-                        .addGap(10, 10, 10)
-                        .addComponent(btnSendData)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnGetData)))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(textCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(textToken, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSubmitText))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textReport, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(120, 120, 120))
-        );
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 180, 100, 40));
+
+        fileChooser.setText("Choose file");
+        fileChooser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileChooserActionPerformed(evt);
+            }
+        });
+        getContentPane().add(fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 80, 100, 40));
+        getContentPane().add(textFilePath, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, 290, -1));
+
+        jLabel4.setText("File path:");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
+
+        btnDownloadFile.setText("Download file");
+        btnDownloadFile.setEnabled(false);
+        btnDownloadFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDownloadFileActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnDownloadFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 180, 100, 40));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendDataActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSendDataActionPerformed
-
-    private void btnSendDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSendDataMouseClicked
         // TODO add your handling code here:
         String urlPost="http://tesa.me:8181/data?u=140896&o="+token+"&t=0";
         postData(urlPost, textData.getText());
@@ -179,10 +195,43 @@ public class MainFrame extends javax.swing.JFrame {
             textReport.setForeground(Color.RED);
             textReport.setText("Send data error!");
         }
+        uploadFile(textToken.getText());
        
+    }//GEN-LAST:event_btnSendDataActionPerformed
+
+    private void btnSendDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSendDataMouseClicked
+        // TODO add your handling code here:
+//        String urlPost="http://tesa.me:8181/data?u=140896&o="+token+"&t=0";
+//        postData(urlPost, textData.getText());
+//        textReport.setForeground(Color.BLUE);
+//        textReport.setText("Send data successful!");
+//        if (textCode.getText().trim().length()==0||null==textCode.getText()) {
+//            textReport.setForeground(Color.RED);
+//            textReport.setText("Send data error!");
+//        }
+//       
     }//GEN-LAST:event_btnSendDataMouseClicked
 
     private void btnCreateCodeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCreateCodeMouseClicked
+        // TODO add your handling code here:
+//        data=mapData();
+//        code=data.get("code");
+//        token=data.get("token");
+//        textCode.setText(code);
+//        textToken.setText(token);
+//        textData.setText("");
+//        textReport.setText("");
+    }//GEN-LAST:event_btnCreateCodeMouseClicked
+
+    private void btnGetDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGetDataMouseClicked
+        // TODO add your handling code here:
+//        String token=getTokenByCode(textCode.getText());
+//        if (token.trim().length()!=0) {
+//            textData.setText(recevieData(token));
+//        }
+    }//GEN-LAST:event_btnGetDataMouseClicked
+
+    private void btnCreateCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateCodeActionPerformed
         // TODO add your handling code here:
         data=mapData();
         code=data.get("code");
@@ -191,13 +240,62 @@ public class MainFrame extends javax.swing.JFrame {
         textToken.setText(token);
         textData.setText("");
         textReport.setText("");
-    }//GEN-LAST:event_btnCreateCodeMouseClicked
+        btnDownloadFile.setEnabled(false);
+    }//GEN-LAST:event_btnCreateCodeActionPerformed
 
-    private void btnGetDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGetDataMouseClicked
+    private void btnGetDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetDataActionPerformed
         // TODO add your handling code here:
-        String token=textToken.getText();
-        textData.setText(recevieData(token));
-    }//GEN-LAST:event_btnGetDataMouseClicked
+        token=getTokenByCode(textCode.getText());
+        Map<String,String> map=recevieData(token);
+             
+        if (token.trim().length()!=0) {
+            textData.setText(map.get("text"));
+        }
+        if (null!=map.get("fileName")) {
+            fileName=map.get("fileName");
+            btnDownloadFile.setEnabled(true);
+        }else
+            btnDownloadFile.setEnabled(false);
+    }//GEN-LAST:event_btnGetDataActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        textCode.setText("");
+        textData.setText("");        
+        textReport.setText("");
+        textToken.setText("");
+        textFilePath.setText("");
+        btnDownloadFile.setEnabled(false);
+    }//GEN-LAST:event_btnClearActionPerformed
+ 
+    private void fileChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileChooserActionPerformed
+        // TODO add your handling code here:
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		int returnValue = jfc.showOpenDialog(null);
+		// int returnValue = jfc.showSaveDialog(null);
+
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = jfc.getSelectedFile();
+                        textFilePath.setText(selectedFile.getAbsolutePath());
+		}
+    }//GEN-LAST:event_fileChooserActionPerformed
+
+    private void btnDownloadFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownloadFileActionPerformed
+        // TODO add your handling code here:
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		jfc.setDialogTitle("Choose a directory to save your file: ");
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		int returnValue = jfc.showSaveDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			if (jfc.getSelectedFile().isDirectory()) {
+				System.out.println("You selected the directory: " + jfc.getSelectedFile());
+			}
+		}
+        String urlDownload="http://tesa.me:8181/"+token+"/"+fileName;
+        downloadFile(urlDownload, jfc.getSelectedFile().toString()+"\\"+fileName);
+
+    }//GEN-LAST:event_btnDownloadFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -232,8 +330,11 @@ public class MainFrame extends javax.swing.JFrame {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             java.awt.EventQueue.invokeLater(new Runnable() {
                 public void run() {
-                    
-                    new MainFrame().setVisible(true);
+                    MainFrame mainFrame=new MainFrame();
+                    mainFrame.setVisible(true);
+                    mainFrame.setName("Tesa");
+                    mainFrame.setTitle("Tesa desktop");
+//                    new MainFrame().setVisible(true);
                 }
             });
         } catch (ClassNotFoundException ex) {
@@ -247,20 +348,92 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //</editor-fold>
     }
-      public static String recevieData(String token){
-        String data="";
+     public void uploadFile(String token) {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpPost httppost = new HttpPost("http://tesa.me:8181/data?u=140896&o="+token+"&t=1");
+
+
+            StringBody dataType=new StringBody("file", ContentType.TEXT_PLAIN);
+
+            org.apache.http.HttpEntity reqEntity = MultipartEntityBuilder.create()
+//                    .addPart("data-type",dataType)
+                    .addBinaryBody("file",new File(textFilePath.getText()))
+                    .build();
+            httppost.setEntity(reqEntity);
+            System.out.println("executing request " + httppost.getRequestLine());
+            CloseableHttpResponse response = httpclient.execute(httppost);
+
+                System.out.println("----------------------------------------");
+                System.out.println(response.getStatusLine());
+                org.apache.http.HttpEntity resEntity = response.getEntity();
+                if (resEntity != null) {
+                    System.out.println("Response content length: " + resEntity.getContentLength());
+                }
+                EntityUtils.consume(resEntity);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+ private  void downloadFile(String urlStr, String file) {
+        try {
+            System.setProperty("http.agent", "Chrome");
+            URL url = new URL(urlStr);
+            BufferedInputStream bis = new BufferedInputStream(url.openStream());
+            FileOutputStream fis = new FileOutputStream(file);
+            byte[] buffer = new byte[1024];
+            int count=0;
+            while((count = bis.read(buffer,0,1024)) != -1)
+            {
+                fis.write(buffer, 0, count);
+            }
+            fis.close();
+            bis.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+      public Map<String,String> recevieData(String token){
+        Map<String,String> map=new HashMap<>();
+        String data;
         try {
             HttpURLConnection connection = initHttpURLConnection("http://tesa.me:8181/data?u=1&o=" + token, "GET", "text/html;charset=utf-8");
             InputStream in = new BufferedInputStream(connection.getInputStream());
             data = IOUtils.toString(in, "UTF-8");
-            Map<String,String> map = new ObjectMapper().readValue(data, HashMap.class);
-            data=map.get("text");
+            map = new ObjectMapper().readValue(data, HashMap.class);
         } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(0);
+            return map;
         }
-        return data;
+        return  map;
      }
+      public String getTokenByCode(String code){
+           String token="";
+        try {
+            HttpURLConnection connection = initHttpURLConnection("http://tesa.me:8181/connect?u=1&c=" + code, "GET", "text/html;charset=utf-8");
+            InputStream in = new BufferedInputStream(connection.getInputStream());
+            token = IOUtils.toString(in, "UTF-8").trim();
+            if (connection.getResponseCode()==200) {
+                textReport.setForeground(Color.BLUE);
+                textReport.setText("Get data successfull!");
+            }
+            System.out.println(token);
+       
+        } catch (IOException e) {
+            textReport.setForeground(Color.red);
+            textReport.setText("Can not get data!");
+            token="";
+        }
+        
+        return token;
+      }
     public static HashMap<String,String> mapData(){
         HashMap<String,String> map=null;
         try {
@@ -274,6 +447,23 @@ public class MainFrame extends javax.swing.JFrame {
             e.printStackTrace();
         }
         return  map;
+    }
+    public String  getFileNameByCode(String token) {
+        String fileName="";
+        try {
+            HttpURLConnection conn= initHttpURLConnection("http://tesa.me:8181/data?u=140896&o="+token+"&t=0","POST","\"application/json; charset=UTF-8\"");
+            InputStream in = new BufferedInputStream(conn.getInputStream());
+            String result = IOUtils.toString(in, "UTF-8");
+            Map<String,String>map= new ObjectMapper().readValue(result, HashMap.class);
+            fileName=map.get("fileName");
+            in.close();
+            conn.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+            textReport.setForeground(Color.RED);
+            textReport.setText("Send data error!");
+        }
+        return fileName;
     }
   public void postData(String urlService, String data) {
         try {
@@ -310,18 +500,22 @@ public class MainFrame extends javax.swing.JFrame {
         return conn;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCreateCode;
+    private javax.swing.JButton btnDownloadFile;
     private javax.swing.JButton btnGetData;
     private javax.swing.JButton btnSendData;
-    private javax.swing.JButton btnSubmitText;
+    private javax.swing.JButton fileChooser;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField textCode;
     private javax.swing.JTextArea textData;
+    private javax.swing.JTextField textFilePath;
     private javax.swing.JLabel textReport;
     private javax.swing.JTextField textToken;
     // End of variables declaration//GEN-END:variables

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -36,6 +37,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
 /**
  *
  * @author pc0203
@@ -66,11 +68,12 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
-        btnSendData = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         textData = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         textCode = new javax.swing.JTextField();
+        btnSendData = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         textToken = new javax.swing.JTextField();
         btnCreateCode = new javax.swing.JButton();
@@ -90,7 +93,22 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        setResizable(false);
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        textData.setColumns(20);
+        textData.setRows(5);
+        textData.setBorder(javax.swing.BorderFactory.createTitledBorder("Text"));
+        jScrollPane2.setViewportView(textData);
+        textData.getAccessibleContext().setAccessibleName("");
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 340, -1));
+
+        jLabel1.setText("Code: ");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, 20));
+        jPanel1.add(textCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 40, -1));
 
         btnSendData.setText("Send data");
         btnSendData.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -103,25 +121,13 @@ public class MainFrame extends javax.swing.JFrame {
                 btnSendDataActionPerformed(evt);
             }
         });
-        getContentPane().add(btnSendData, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 30, 100, 40));
-
-        textData.setColumns(20);
-        textData.setRows(5);
-        textData.setBorder(javax.swing.BorderFactory.createTitledBorder("Text"));
-        jScrollPane2.setViewportView(textData);
-        textData.getAccessibleContext().setAccessibleName("");
-
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 340, -1));
-
-        jLabel1.setText("Code: ");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, 20));
-        getContentPane().add(textCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 40, -1));
+        jPanel1.add(btnSendData, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 30, 100, 40));
 
         jLabel3.setText("Token:");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 40, 20));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 40, 20));
 
         textToken.setEnabled(false);
-        getContentPane().add(textToken, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 170, 200, 20));
+        jPanel1.add(textToken, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 170, 200, 20));
 
         btnCreateCode.setText("Create code");
         btnCreateCode.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -134,11 +140,12 @@ public class MainFrame extends javax.swing.JFrame {
                 btnCreateCodeActionPerformed(evt);
             }
         });
-        getContentPane().add(btnCreateCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 30, 100, 40));
+        jPanel1.add(btnCreateCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 30, 100, 40));
 
+        textReport.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         textReport.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         textReport.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
-        getContentPane().add(textReport, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, 200, 40));
+        jPanel1.add(textReport, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 330, 30));
 
         btnGetData.setText("Get data");
         btnGetData.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -151,7 +158,7 @@ public class MainFrame extends javax.swing.JFrame {
                 btnGetDataActionPerformed(evt);
             }
         });
-        getContentPane().add(btnGetData, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 80, 100, 40));
+        jPanel1.add(btnGetData, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 80, 100, 40));
 
         btnClear.setText("Clear");
         btnClear.addActionListener(new java.awt.event.ActionListener() {
@@ -159,7 +166,7 @@ public class MainFrame extends javax.swing.JFrame {
                 btnClearActionPerformed(evt);
             }
         });
-        getContentPane().add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 180, 100, 40));
+        jPanel1.add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 180, 100, 40));
 
         fileChooser.setText("Choose file");
         fileChooser.addActionListener(new java.awt.event.ActionListener() {
@@ -167,11 +174,11 @@ public class MainFrame extends javax.swing.JFrame {
                 fileChooserActionPerformed(evt);
             }
         });
-        getContentPane().add(fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 80, 100, 40));
-        getContentPane().add(textFilePath, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, 290, -1));
+        jPanel1.add(fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 80, 100, 40));
+        jPanel1.add(textFilePath, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, 290, -1));
 
         jLabel4.setText("File path:");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
 
         btnDownloadFile.setText("Download file");
         btnDownloadFile.setEnabled(false);
@@ -180,7 +187,18 @@ public class MainFrame extends javax.swing.JFrame {
                 btnDownloadFileActionPerformed(evt);
             }
         });
-        getContentPane().add(btnDownloadFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 180, 100, 40));
+        jPanel1.add(btnDownloadFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 180, 100, 40));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -331,9 +349,13 @@ public class MainFrame extends javax.swing.JFrame {
             java.awt.EventQueue.invokeLater(new Runnable() {
                 public void run() {
                     MainFrame mainFrame=new MainFrame();
+                    mainFrame.setLocationRelativeTo(null);
                     mainFrame.setVisible(true);
                     mainFrame.setName("Tesa");
                     mainFrame.setTitle("Tesa desktop");
+                    ImageIcon img = new ImageIcon("C:\\Users\\pc0203\\Documents\\NetBeansProjects\\TesaDesktop\\src\\main\\java\\com\\icon\\tesa.png");
+                    mainFrame.setIconImage(img.getImage());
+                    
 //                    new MainFrame().setVisible(true);
                 }
             });
@@ -510,6 +532,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
